@@ -8,17 +8,23 @@ cfg="$HOME/.config/herdr/config.toml"
 shuffle="$here/shuffle.sh"
 
 # clips/{ack,request,done,annoyed}/: first prompt of a session, agent needs you, agent finished, kept aside
-# Optional sort from /peon: ack=01,02 request=03,04 done=07 annoyed=14. Each clip is filed under a name from its words.
+# Optional sort from /peon: ack=01,02 request=03:what-you-want,04 done=07 annoyed=14.
+# A clip is filed under the name after the colon, else under a name from its transcript.
 if [ $# -gt 0 ] && [ "${1#*=}" != "$1" ]; then
   clips="${XDG_DATA_HOME:-$HOME/.local/share}/herdr-peon/clips"
   for arg in "$@"; do
     pool=${arg%%=*}
     case $pool in ack|request|done|annoyed) ;; *) echo "unknown bucket: $pool"; exit 1 ;; esac
     mkdir -p "$clips/$pool"
-    for n in $(echo "${arg#*=}" | tr ',' ' '); do
+    for item in $(echo "${arg#*=}" | tr ',' ' '); do
+      n=${item%%:*}
       [ -f "$clips/$n.mp3" ] || { echo "no clip $n.mp3"; exit 1; }
-      name=$(awk -F'\t' -v f="$n.mp3" '$1 == f { print $3 }' "$clips/transcript.tsv" | tr 'A-Z' 'a-z' | tr -cs 'a-z0-9' '-' | sed 's/^-*//; s/-*$//')
-      mv "$clips/$n.mp3" "$clips/$pool/${name:-$n}-$n.mp3"
+      if [ "$item" != "$n" ]; then name=${item#*:}
+      else name=$(awk -F'\t' -v f="$n.mp3" '$1 == f { print $3 }' "$clips/transcript.tsv"); fi
+      name=$(printf '%s' "$name" | tr 'A-Z' 'a-z' | tr -cs 'a-z0-9' '-' | sed 's/^-*//; s/-*$//')
+      dest="$clips/$pool/${name:-$n}.mp3"
+      [ -e "$dest" ] && dest="$clips/$pool/${name:-$n}-$n.mp3"
+      mv "$clips/$n.mp3" "$dest"
     done
   done
 fi

@@ -27,7 +27,7 @@ Say in one line that it downloads a speech model once (about 500 MB) and runs on
 sh ~/.local/share/herdr-peon/plugin/scripts/prepare.sh "<url>"
 ```
 
-If your sandbox or an auto-mode check blocks it (it installs software and writes to their home folder), do not retry around the block. Hand the user the same command to paste, with the `!` prefix so it runs in their own shell, and wait until they say it finished:
+It writes outside the project (`~/.local/share/herdr-peon`, later `~/.config/herdr`) and downloads software, so a sandbox may block it. If the sandbox blocks it, run it again with the sandbox turned off for that one command; the user gets one approval prompt. Only if that is refused or an auto-mode check blocks it, do not work around it: hand the user the same command to paste, with the `!` prefix so it runs in their own shell, and wait until they say it finished:
 
 ```
 ! sh ~/.local/share/herdr-peon/plugin/scripts/prepare.sh "<url>"
@@ -50,13 +50,13 @@ Do not ask before installing; go straight to step 5.
 
 ## 5. Install
 
-Run the install with your sort baked in, clip numbers from the transcript:
+Run the install with your sort baked in: clip number, a colon, and the real words as a short name (fix Whisper's mishearings here, "Adam" is `dabu`):
 
 ```bash
-sh ~/.local/share/herdr-peon/plugin/scripts/install-sounds.sh ack=05,06 request=03,04,08 done=07,09 annoyed=14,15
+sh ~/.local/share/herdr-peon/plugin/scripts/install-sounds.sh ack=05:work-work,06:okie-dokie request=03:something-need-doing,04:what-you-want done=07:ready-to-work,11:dabu annoyed=14:me-busy
 ```
 
-If it is blocked, hand the same line to the user with a `!` prefix, as in step 3.
+If it is blocked, handle it as in step 3.
 
 It files each clip under a name from its words, replaces the unit in `~/.config/herdr/sounds/` (the previous unit moves to `previous/`), points Herdr's done and needs-you sounds at them (backing up `config.toml` to `config.toml.bak-peon`), starts a one-minute shuffle timer so every ping is a new line for every agent, and reloads Herdr.
 
