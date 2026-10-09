@@ -30,15 +30,21 @@ Other units, same search with their name:
 - **Peasant** (tested): "Yes, milord?" · "Off I go then" · "Job's done!"
 - Should work, not tested yet: Grunt, Footman, Knight, Death Knight, or any Warcraft III unit with a voice-line compilation. Clear, one-line-at-a-time videos sort best.
 
+## The three sounds
+
+| When | Peon says | In the game |
+|---|---|---|
+| **Agent starts**: your first message to a new Claude session | "Work, work" · "Okie dokie" · "Be happy to" | the unit takes an order |
+| **Agent needs you**: waiting on an answer or an approval | "Something need doing?" · "What you want?" · "Yes?" | you click the unit |
+| **Agent is done**: finished its work | "Ready to work" · "Okay" · "Dabu" | the unit is ready |
+
+The annoyed lines ("Me busy, leave me alone!") are kept aside and never played. A new line is picked each time, so it stays fresh.
+
 ## What happens
 
 1. The video is downloaded and cut into one clip per line (`yt-dlp`, `ffmpeg`).
 2. Whisper writes down what each clip says, on your machine.
-3. Claude sorts the lines the way the game uses them:
-   - **ack**: the unit takes an order. Plays on the first prompt of a Claude session.
-   - **request**: you select the unit. Plays when an agent needs you.
-   - **done**: the unit is ready. Plays when an agent finishes.
-   - **annoyed**: "Me busy, leave me alone!" Kept aside, never played.
+3. Claude sorts the lines into the three sounds above.
 4. Herdr's sounds point at the clips, and a small timer shuffles them every minute so each ping is a new line.
 
 ## Needs
