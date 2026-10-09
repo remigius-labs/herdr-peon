@@ -4,7 +4,7 @@ Your [Herdr](https://herdr.dev) agents talk like the Warcraft III Peon. "Work, w
 
 Made for the Peon. Other Warcraft III units work too.
 
-A Claude Code plugin. You paste a link to a unit's voice lines; Claude cuts the video into lines, listens to each one, sorts them and sets up Herdr. Works for every agent Herdr runs.
+A Claude Code plugin. You paste a link to a unit's voice lines; Claude walks you through it, sorts the lines and hands you two commands to paste. Works for every agent Herdr runs.
 
 ## Install
 
@@ -46,6 +46,8 @@ The annoyed lines ("Me busy, leave me alone!") are kept aside and never played. 
 2. Whisper writes down what each clip says, on your machine.
 3. Claude sorts the lines into the three sounds above.
 4. Herdr's sounds point at the clips, and a small timer shuffles them every minute so each ping is a new line.
+
+Anything that downloads or changes your system is a command you run yourself (`! …`), so you see every step and sandboxed or auto-mode sessions never get blocked.
 
 ## Needs
 

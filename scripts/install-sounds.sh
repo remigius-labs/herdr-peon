@@ -8,6 +8,20 @@ cfg="$HOME/.config/herdr/config.toml"
 shuffle="$here/shuffle.sh"
 
 # clips/{ack,request,done,annoyed}/: first prompt of a session, agent needs you, agent finished, kept aside
+# Optional sort from /peon: ack=01,02 request=03,04 done=07 annoyed=14. Each clip is filed under a name from its words.
+if [ $# -gt 0 ] && [ "${1#*=}" != "$1" ]; then
+  clips="${XDG_DATA_HOME:-$HOME/.local/share}/herdr-peon/clips"
+  for arg in "$@"; do
+    pool=${arg%%=*}
+    case $pool in ack|request|done|annoyed) ;; *) echo "unknown bucket: $pool"; exit 1 ;; esac
+    mkdir -p "$clips/$pool"
+    for n in $(echo "${arg#*=}" | tr ',' ' '); do
+      [ -f "$clips/$n.mp3" ] || { echo "no clip $n.mp3"; exit 1; }
+      name=$(awk -F'\t' -v f="$n.mp3" '$1 == f { print $3 }' "$clips/transcript.tsv" | tr 'A-Z' 'a-z' | tr -cs 'a-z0-9' '-' | sed 's/^-*//; s/-*$//')
+      mv "$clips/$n.mp3" "$clips/$pool/${name:-$n}-$n.mp3"
+    done
+  done
+fi
 ls "$clips/request"/*.mp3 >/dev/null 2>&1 || { echo "no clips in $clips/request, sort the clips first"; exit 1; }
 # A new unit replaces the old one; the old clips move to previous/ so a swap can be undone.
 rm -rf "$snd/previous"
