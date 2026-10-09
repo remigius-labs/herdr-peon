@@ -7,9 +7,9 @@ allowed-tools: [Bash, Read]
 
 # Peon
 
-Set up Warcraft III unit voices for every agent Herdr runs. The user brings a video and pastes two commands you write for them; you do the rest. Short messages, no jargon.
+Set up Warcraft III unit voices for every agent Herdr runs. The user brings a video and says "yes" once; you do the rest. Short messages, no jargon.
 
-The plugin keeps a stable link to itself at `~/.local/share/herdr-peon/plugin/` (refreshed on every prompt). Working files go in `~/.local/share/herdr-peon/clips/`. You only read files; every command that changes the user's system is a line you hand them with `!`.
+The plugin keeps a stable link to itself at `~/.local/share/herdr-peon/plugin/` (refreshed on every prompt). Working files go in `~/.local/share/herdr-peon/clips/`. Run the scripts yourself; only when a sandbox or auto-mode check blocks one, hand the user that line with `!`.
 
 ## 1. Check the machine (silently, report only what is missing)
 
@@ -19,15 +19,19 @@ Needs `herdr`, `ffmpeg`, `yt-dlp`, `python3`, and one of `pw-play`/`paplay`. If 
 
 Use the argument if given. Otherwise ask once: "Paste a YouTube link to a Warcraft III unit's voice lines (search 'warcraft 3 peon quotes', 'peasant quotes', 'grunt quotes')." Only Warcraft III units.
 
-## 3. Hand the first command to the user
+## 3. Cut and transcribe
 
-Downloading, installing the speech model and writing to their home folder happen in the user's own shell, not through your tools: sandboxes and auto-mode checks rightly stop an agent from installing software. Give them exactly one line to paste (the `!` prefix runs it in their shell):
+Say in one line that it downloads a speech model once (about 500 MB) and runs on their machine, nothing uploaded. Then run it yourself:
+
+```bash
+sh ~/.local/share/herdr-peon/plugin/scripts/prepare.sh "<url>"
+```
+
+If your sandbox or an auto-mode check blocks it (it installs software and writes to their home folder), do not retry around the block. Hand the user the same command to paste, with the `!` prefix so it runs in their own shell, and wait until they say it finished:
 
 ```
 ! sh ~/.local/share/herdr-peon/plugin/scripts/prepare.sh "<url>"
 ```
-
-Say it downloads a speech model once (about 500 MB) and runs on their machine; nothing is uploaded. Wait until they say it finished.
 
 ## 4. Sort the lines yourself
 
@@ -44,22 +48,24 @@ Whisper mishears accents ("Be happy too", "Adam" for "Dabu"); judge by what the 
 
 Show the user one compact table (line, bucket) and ask a single question: "Good? (yes, or tell me what to move)". Apply any moves they ask for.
 
-## 5. Hand the install command to the user
+## 5. Install
 
-Write the install line with your sort baked in, clip numbers from the transcript, and give it to them to paste:
+Run the install with your sort baked in, clip numbers from the transcript:
 
+```bash
+sh ~/.local/share/herdr-peon/plugin/scripts/install-sounds.sh ack=05,06 request=03,04,08 done=07,09 annoyed=14,15
 ```
-! sh ~/.local/share/herdr-peon/plugin/scripts/install-sounds.sh ack=05,06 request=03,04,08 done=07,09 annoyed=14,15
-```
+
+If it is blocked, hand the same line to the user with a `!` prefix, as in step 3.
 
 It files each clip under a name from its words, replaces the unit in `~/.config/herdr/sounds/` (the previous unit moves to `previous/`), points Herdr's done and needs-you sounds at them (backing up `config.toml` to `config.toml.bak-peon`), starts a one-minute shuffle timer so every ping is a new line for every agent, and reloads Herdr.
 
 ## 6. Let them hear it
 
-Give them one more line to paste, so they hear each sound once:
+Play one line from each sound, a second apart:
 
-```
-! for b in ack request done; do pw-play "$(ls ~/.config/herdr/sounds/$b/*.mp3 | shuf -n1)"; sleep 1; done
+```bash
+for b in ack request done; do pw-play "$(ls ~/.config/herdr/sounds/$b/*.mp3 | shuf -n1)"; sleep 1; done
 ```
 
 (`paplay` instead of `pw-play` on PulseAudio.) Then say, in one or two lines: Herdr now speaks when an agent in another workspace needs them or finishes, and Claude sessions get an order line on their first prompt. To swap units, run `/peon` again with a new video.
