@@ -1,6 +1,8 @@
 # herdr-peon
 
-Your [Herdr](https://herdr.dev) agents talk like Warcraft III units. "Work, work" when you give an order, "Something need doing?" when an agent needs you, "Job's done!" when it finishes.
+Your [Herdr](https://herdr.dev) agents talk like the Warcraft III Peon. "Work, work" when you give an order, "Something need doing?" when an agent needs you, "Ready to work" when it finishes.
+
+Made for the Peon. Other Warcraft III units work too.
 
 A Claude Code plugin. You paste a link to a unit's voice lines; Claude cuts the video into lines, listens to each one, sorts them and sets up Herdr. Works for every agent Herdr runs.
 
@@ -14,21 +16,19 @@ A Claude Code plugin. You paste a link to a unit's voice lines; Claude cuts the 
 Then in Claude Code:
 
 ```
-/peon https://www.youtube.com/watch?v=<a Warcraft III unit voice-line video>
+/peon <youtube link to "warcraft 3 peon quotes">
 ```
 
 Run `/peon` again with another video to swap units.
 
-## Units that work well
+## Units
 
-Search YouTube for "warcraft 3 <unit> quotes" and paste the link:
+Search YouTube for "warcraft 3 peon quotes" and paste the link. That is the one this was made for.
 
-Tested:
+Other units, same search with their name:
 
-- **Peon**: "Work, work" · "Something need doing?"
-- **Peasant**: "Yes, milord?" · "Off I go then" · "Job's done!"
-
-Should work, not tested yet: Grunt, Footman, Knight, Death Knight, or any Warcraft III unit with a voice-line compilation. Clear, one-line-at-a-time videos sort best.
+- **Peasant** (tested): "Yes, milord?" · "Off I go then" · "Job's done!"
+- Should work, not tested yet: Grunt, Footman, Knight, Death Knight, or any Warcraft III unit with a voice-line compilation. Clear, one-line-at-a-time videos sort best.
 
 ## What happens
 
