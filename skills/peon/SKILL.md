@@ -7,7 +7,7 @@ allowed-tools: [Bash, Read]
 
 # Peon
 
-Set up Warcraft III unit voices for every agent Herdr runs. The user brings a video and says "yes" once; you do the rest. Short messages, no jargon.
+Set up Warcraft III unit voices for every agent Herdr runs. The user pastes a link; you do the rest without asking anything. Short messages, no jargon.
 
 The plugin keeps a stable link to itself at `~/.local/share/herdr-peon/plugin/` (refreshed on every prompt). Working files go in `~/.local/share/herdr-peon/clips/`. Run the scripts yourself; only when a sandbox or auto-mode check blocks one, hand the user that line with `!`.
 
@@ -46,7 +46,7 @@ Read `~/.local/share/herdr-peon/clips/transcript.tsv` (file, seconds, text). War
 
 Whisper mishears accents ("Be happy too", "Adam" for "Dabu"); judge by what the line means. Leave out clips that are noise, music, two lines run together, or unclear. Aim for at least two lines in each of `ack`, `request`, `done`.
 
-Show the user one compact table (line, bucket) and ask a single question: "Good? (yes, or tell me what to move)". Apply any moves they ask for.
+Do not ask before installing; go straight to step 5.
 
 ## 5. Install
 
@@ -62,10 +62,10 @@ It files each clip under a name from its words, replaces the unit in `~/.config/
 
 ## 6. Let them hear it
 
-Play one line from each sound, a second apart:
+Show one compact table of what went where (line, sound), then play one line from each sound, a second apart:
 
 ```bash
 for b in ack request done; do pw-play "$(ls ~/.config/herdr/sounds/$b/*.mp3 | shuf -n1)"; sleep 1; done
 ```
 
-(`paplay` instead of `pw-play` on PulseAudio.) Then say, in one or two lines: Herdr now speaks when an agent in another workspace needs them or finishes, and Claude sessions get an order line on their first prompt. To swap units, run `/peon` again with a new video.
+(`paplay` instead of `pw-play` on PulseAudio.) If they want a line moved, run the install again with the new sort (the clips are still in `~/.local/share/herdr-peon/clips/`, sorted into folders: move the file between folders and run `install-sounds.sh` with no arguments). Then say, in one or two lines: Herdr now speaks when an agent in another workspace needs them or finishes, and Claude sessions get an order line on their first prompt. To swap units, run `/peon` again with a new video.
