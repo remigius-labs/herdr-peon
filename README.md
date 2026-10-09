@@ -4,6 +4,8 @@ Your [Herdr](https://herdr.dev) agents talk like the Warcraft III Peon. "Work, w
 
 Made for the Peon. Other Warcraft III units work too.
 
+No audio or other Blizzard material is included in this repo; you bring your own video.
+
 A Claude Code plugin. You paste a link to a unit's voice lines; Claude cuts the video into lines, listens to each one, sorts them and sets up Herdr. Works for every agent Herdr runs.
 
 ## Install
