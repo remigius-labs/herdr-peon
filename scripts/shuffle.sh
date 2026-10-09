@@ -1,5 +1,5 @@
 #!/bin/sh
-# Point Herdr's done and request sounds at a random clip from each pool. Runs on every prompt.
+# Point Herdr's done and request sounds at a random clip from each pool. Runs every minute from the shuffle timer.
 snd="$HOME/.config/herdr/sounds"
 for pool in done request; do
   pick=$(ls "$snd/$pool"/*.mp3 2>/dev/null | shuf -n1)

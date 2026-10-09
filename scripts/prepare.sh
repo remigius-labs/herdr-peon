@@ -1,5 +1,5 @@
 #!/bin/sh
-# Step 1 of /peon, run by the user: download the video, cut it into lines, write down what each says.
+# Step 1 of /peon: download the video, cut it into lines, write down what each says.
 set -eu
 [ -n "${1:-}" ] || { echo "usage: prepare.sh <youtube-url>"; exit 1; }
 here=$(cd "$(dirname "$0")" && pwd)
