@@ -1,0 +1,10 @@
+{
+  "name": "herdr-peon",
+  "version": "0.1.0",
+  "description": "Warcraft III unit voices for your Herdr agents: paste a voice-line video, get \"Work, work\" when you give an order and \"Something need doing?\" when an agent needs you.",
+  "author": {
+    "name": "remigius-labs"
+  },
+  "homepage": "https://github.com/remigius-labs/herdr-peon",
+  "license": "MIT"
+}

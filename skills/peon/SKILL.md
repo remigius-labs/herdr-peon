@@ -1,0 +1,70 @@
+---
+name: peon
+description: Turn a Warcraft III unit voice-line video into Herdr agent sounds - "Work, work" when you give an order, "Something need doing?" when an agent needs you, "Job's done!" when it finishes. Use when the user types /peon, pastes a voice-line video for Herdr, or wants to swap or set up unit voices.
+argument-hint: <youtube-url of a Warcraft III unit voice-line compilation>
+allowed-tools: [Bash, Read]
+---
+
+# Peon
+
+Set up Warcraft III unit voices for every agent Herdr runs. The user brings a video; you do everything else. Keep the user's effort to pasting a link and saying "yes" once. Short messages, no jargon.
+
+Scripts live in `${CLAUDE_PLUGIN_ROOT}/scripts/`. Working files go in `~/.local/share/herdr-peon/clips/`.
+
+## 1. Check the machine (silently, report only what is missing)
+
+Needs `herdr`, `ffmpeg`, `yt-dlp`, `python3`, and one of `pw-play`/`paplay`. If something is missing, name it and the install command for their system (Arch: `sudo pacman -S ffmpeg yt-dlp`), then stop until they confirm.
+
+## 2. Get the video
+
+Use the argument if given. Otherwise ask once: "Paste a YouTube link to a Warcraft III unit's voice lines (search 'warcraft 3 peon quotes', 'peasant quotes', 'grunt quotes')." Only Warcraft III units.
+
+## 3. Cut and transcribe
+
+```bash
+rm -rf ~/.local/share/herdr-peon/clips
+sh "${CLAUDE_PLUGIN_ROOT}/scripts/get-clips.sh" "<url>"
+sh "${CLAUDE_PLUGIN_ROOT}/scripts/transcribe.sh"
+```
+
+Tell the user before the first transcribe: it downloads a speech model once (about 500 MB) and runs on their machine; nothing is uploaded. Then read `~/.local/share/herdr-peon/clips/transcript.tsv` (file, seconds, text).
+
+## 4. Sort the lines yourself
+
+Warcraft III units have three kinds of lines, and they map onto agents:
+
+| Bucket | In the game | For agents | Examples |
+|---|---|---|---|
+| `ack` | the unit takes an order | first prompt of a session | Work, work · Okie dokie · As you wish · I can do that · Be happy to |
+| `request` | you select the unit | an agent needs you | Yes? · What you want? · Something need doing? · My lord? · Hm? |
+| `done` | the unit is ready or finished | an agent finished | Ready to work · Job's done! · Dabu · Ready to serve |
+| `annoyed` | you click it too often | kept aside, never played | Me busy, leave me alone! · Me not that kind of orc |
+
+Whisper mishears accents ("Be happy too", "Adam" for "Dabu"); judge by what the line means. Drop clips that are noise, music, two lines run together, or unclear. Aim for at least two lines in each of `ack`, `request`, `done`.
+
+Move each kept clip into its bucket with a short name from its words:
+
+```bash
+cd ~/.local/share/herdr-peon/clips && mkdir -p ack request done annoyed
+mv 05.mp3 ack/work-work.mp3
+```
+
+Show the user one compact table (line, bucket) and ask a single question: "Good? (yes, or tell me what to move)". Apply any moves they ask for.
+
+## 5. Install
+
+```bash
+sh "${CLAUDE_PLUGIN_ROOT}/scripts/install-sounds.sh"
+```
+
+It replaces the buckets in `~/.config/herdr/sounds/` (the previous unit moves to `previous/`), points Herdr's done and needs-you sounds at them (backing up `config.toml` to `config.toml.bak-peon`), starts a one-minute shuffle timer so every ping is a new line for every agent, and reloads Herdr.
+
+## 6. Let them hear it
+
+Play one line from each bucket, a second apart:
+
+```bash
+for b in ack request done; do pw-play "$(ls ~/.config/herdr/sounds/$b/*.mp3 | shuf -n1)"; sleep 1; done
+```
+
+Use `paplay` if `pw-play` is missing. Then say, in one or two lines: Herdr now speaks when an agent in another workspace needs them or finishes, and Claude sessions get an order line on their first prompt. To swap units, run `/peon` again with a new video.

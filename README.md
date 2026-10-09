@@ -1,35 +1,66 @@
 # herdr-peon
 
-Your [Herdr](https://herdr.dev) agents ping you with Warcraft III peon voice lines instead of a bling. A random line every time.
+Your [Herdr](https://herdr.dev) agents talk like Warcraft III units. "Work, work" when you give an order, "Something need doing?" when an agent needs you, "Job's done!" when it finishes.
 
-*"Something need doing?"*
-
-## How it works
-
-- Herdr plays one sound file when a background agent finishes or needs you. That file is a symlink.
-- A Claude Code `UserPromptSubmit` hook re-points the symlink at a random clip on every prompt, so the next ping is a different line.
+A Claude Code plugin. You paste a link to a unit's voice lines; Claude cuts the video into lines, listens to each one, sorts them and sets up Herdr. Works for every agent Herdr runs.
 
 ## Install
 
-Needs `herdr`, `yt-dlp`, `ffmpeg`, `python3`.
-
-```bash
-git clone https://github.com/remigius-labs/herdr-peon && cd herdr-peon
-./get-clips.sh "<youtube url of a peon voice line compilation>"
-# listen to clips/, delete the ones you dont like
-./install.sh
+```
+/plugin marketplace add remigius-labs/herdr-peon
+/plugin install herdr-peon@herdr-peon
 ```
 
-`get-clips.sh` downloads the audio and cuts it into one mp3 per line, split on silence. Works with any voice line compilation: peasants, grunts, Arthas, whoever.
+Then in Claude Code:
 
-`install.sh` copies the clips to `~/.config/herdr/sounds/peon/`, adds `[ui.sound]` to your Herdr config, adds the hook to `~/.claude/settings.json` (backup first) and reloads Herdr. Safe to re-run.
+```
+/peon https://www.youtube.com/watch?v=<a Warcraft III unit voice-line video>
+```
+
+Run `/peon` again with another video to swap units.
+
+## Units that work well
+
+Search YouTube for "warcraft 3 <unit> quotes" and paste the link:
+
+Tested:
+
+- **Peon**: "Work, work" · "Something need doing?"
+- **Peasant**: "Yes, milord?" · "Off I go then" · "Job's done!"
+
+Should work, not tested yet: Grunt, Footman, Knight, Death Knight, or any Warcraft III unit with a voice-line compilation. Clear, one-line-at-a-time videos sort best.
+
+## What happens
+
+1. The video is downloaded and cut into one clip per line (`yt-dlp`, `ffmpeg`).
+2. Whisper writes down what each clip says, on your machine.
+3. Claude sorts the lines the way the game uses them:
+   - **ack**: the unit takes an order. Plays on the first prompt of a Claude session.
+   - **request**: you select the unit. Plays when an agent needs you.
+   - **done**: the unit is ready. Plays when an agent finishes.
+   - **annoyed**: "Me busy, leave me alone!" Kept aside, never played.
+4. Herdr's sounds point at the clips, and a small timer shuffles them every minute so each ping is a new line.
+
+## Needs
+
+Herdr, Claude Code, `ffmpeg`, `yt-dlp`, `python3`, PipeWire or PulseAudio. The first run downloads a speech model (about 500 MB).
 
 ## Limits
 
-- Herdr only plays sounds for agents in workspaces you are not looking at.
-- The shuffle runs per prompt, so pings within one turn repeat the same line.
-- No audio ships with this repo. The voice lines belong to Blizzard; you bring your own.
+- Herdr plays sounds only for agents in workspaces you are not looking at.
+- The order line on a new session works in Claude Code only; the other sounds work for every agent.
+- No audio ships with this plugin. The voice lines belong to Blizzard Entertainment; you fetch them yourself, on your machine, for personal use.
+- Linux only (systemd user timer).
+
+## Remove
+
+```
+/plugin uninstall herdr-peon
+systemctl --user disable --now herdr-peon-shuffle.timer
+```
+
+Restore Herdr's sound settings from `~/.config/herdr/config.toml.bak-peon`.
 
 ## License
 
-MIT, scripts only.
+MIT, scripts only. Fan project, not affiliated with or endorsed by Blizzard Entertainment. Warcraft is a trademark of Blizzard Entertainment.

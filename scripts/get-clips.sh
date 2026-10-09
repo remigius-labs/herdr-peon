@@ -2,8 +2,9 @@
 # Download a voice-line compilation and cut it into one mp3 per line, split on silence.
 # Usage: ./get-clips.sh <youtube-url> [out-dir]
 set -eu
-url="${1:?usage: get-clips.sh <youtube-url> [out-dir]}"
-out="${2:-clips}"
+[ -n "${1:-}" ] || { echo "usage: ./get-clips.sh <youtube-url of a Warcraft III unit voice-line compilation> [out-dir]"; exit 1; }
+url="$1"
+out="${2:-${XDG_DATA_HOME:-$HOME/.local/share}/herdr-peon/clips}"
 mkdir -p "$out"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -33,5 +34,5 @@ for s, e in zip(ends, starts):
     subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{s0:.3f}",
                     "-t", f"{length:.3f}", "-i", src,
                     "-af", f"afade=t=out:st={length - 0.1:.3f}:d=0.1", f"{out}/{n:02d}.mp3"], check=True)
-print(f"{n} clips in {out}/  listen, delete the ones you dont like, then run ./install.sh")
+print(f"{n} clips in {out}/  next: transcribe.sh")
 PY

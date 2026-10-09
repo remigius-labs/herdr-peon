@@ -1,0 +1,14 @@
+{
+  "name": "herdr-peon",
+  "description": "Warcraft III unit voices for Herdr agents.",
+  "owner": {
+    "name": "remigius-labs"
+  },
+  "plugins": [
+    {
+      "name": "herdr-peon",
+      "source": "./",
+      "description": "Warcraft III unit voices for your Herdr agents."
+    }
+  ]
+}

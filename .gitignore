@@ -2,3 +2,4 @@ clips/
 *.mp3
 .claude/
 .mcp.json
+.venv/

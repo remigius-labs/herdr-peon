@@ -1,0 +1,16 @@
+{
+  "description": "Plays an order line (\"Work, work\") on the first prompt of a Claude session.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/on-prompt.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
